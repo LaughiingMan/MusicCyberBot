@@ -11,12 +11,12 @@ import java.util.Arrays;
 /**
  * Created by Proxy on 29.07.2020.
  */
-public class AddTrackAudioCommandImpl implements Command {
+public class AddAudioCommandImpl implements Command {
 
     private final TrackScheduler scheduler;
     private final AudioPlayerManager playerManager;
 
-    public AddTrackAudioCommandImpl(TrackScheduler scheduler, AudioPlayerManager playerManager) {
+    public AddAudioCommandImpl(TrackScheduler scheduler, AudioPlayerManager playerManager) {
         this.scheduler = scheduler;
         this.playerManager = playerManager;
     }

@@ -62,8 +62,8 @@ public class MusicCyberBot {
         final AudioProvider provider = new LavaPlayerAudioProvider(player);
         final TrackScheduler scheduler = new TrackScheduler(player);
         commands.put("join", new JoinAudioCommandImpl(provider));
-        commands.put("play", new PlayAudioCommandImpl(scheduler, playerManager));
-        commands.put("add", new AddTrackAudioCommandImpl(scheduler, playerManager));
+        commands.put("add", new AddAudioCommandImpl(scheduler, playerManager));
         commands.put("destroy", new DestroyPlayerCommandImpl(playerManager));
+        commands.put("clear", new ClearAudioCommandImpl(player, scheduler));
     }
 }
