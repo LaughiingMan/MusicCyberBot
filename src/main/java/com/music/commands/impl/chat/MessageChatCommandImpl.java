@@ -1,4 +1,4 @@
-package com.music.commands.impl;
+package com.music.commands.impl.chat;
 
 import com.music.commands.Command;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Created by Proxy on 29.07.2020.
  */
-public class MessageCommandImpl implements Command {
+public class MessageChatCommandImpl implements Command {
 
     private static final String ROFL = "Тамур даун!";
 

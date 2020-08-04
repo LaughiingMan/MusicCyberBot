@@ -10,11 +10,13 @@ import java.util.Properties;
 public class MusicBotConfig {
 
     private String token;
+    private String prefix;
 
     public MusicBotConfig(String fileName) {
         Properties properties = load(fileName);
         if (properties != null) {
             this.token = properties.getProperty("music.bot.token");
+            this.prefix = properties.getProperty("music.bot.prefix");
         }
     }
 
@@ -31,5 +33,9 @@ public class MusicBotConfig {
 
     public String getToken() {
         return token;
+    }
+
+    public String getPrefix() {
+        return prefix != null ? prefix : "-";
     }
 }

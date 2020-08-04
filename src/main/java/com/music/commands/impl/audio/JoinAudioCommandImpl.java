@@ -1,4 +1,4 @@
-package com.music.commands.impl;
+package com.music.commands.impl.audio;
 
 import com.music.commands.Command;
 import discord4j.core.event.domain.message.MessageCreateEvent;

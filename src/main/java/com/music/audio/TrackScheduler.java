@@ -41,30 +41,6 @@ public class TrackScheduler implements AudioLoadResultHandler {
         startTrack();
     }
 
-    private void startTrack() {
-        if (audioListener == null) {
-            player.startTrack(playlists.get(count), true);
-            audioListener = event -> {
-                if (player.getPlayingTrack() == null) {
-                    count++;
-                    player.startTrack(playlists.get(count), true);
-                }
-            };
-            player.addListener(audioListener);
-        }
-    }
-
-    public void removePlayerListener() {
-        if (audioListener != null) {
-            player.removeListener(audioListener);
-            audioListener = null;
-        }
-    }
-
-    public void cleanPlaylists() {
-        playlists.clear();
-    }
-
     @Override
     public void noMatches() {
 
@@ -73,5 +49,41 @@ public class TrackScheduler implements AudioLoadResultHandler {
     @Override
     public void loadFailed(FriendlyException exception) {
 
+    }
+
+    private void startTrack() {
+        if (audioListener == null) {
+            player.startTrack(playlists.get(count), true);
+            audioListener = event -> addTrack();
+            player.addListener(audioListener);
+        } else {
+            addTrack();
+        }
+    }
+
+    private void addTrack() {
+        if (player.getPlayingTrack() == null && playlists.size() > count + 1) {
+            count++;
+            player.startTrack(playlists.get(count), true);
+        }
+    }
+
+    public void jumpTrack(int index) {
+        if (playlists.size() > index) {
+            count = index;
+            player.playTrack(playlists.get(count));
+        }
+    }
+
+    public void removePlayerListener() {
+        if (audioListener != null) {
+            player.removeListener(audioListener);
+            audioListener = null;
+            count = 0;
+        }
+    }
+
+    public void cleanPlaylists() {
+        playlists.clear();
     }
 }

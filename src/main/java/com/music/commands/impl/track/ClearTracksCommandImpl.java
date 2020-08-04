@@ -1,4 +1,4 @@
-package com.music.commands.impl;
+package com.music.commands.impl.track;
 
 import com.music.audio.TrackScheduler;
 import com.music.commands.Command;
@@ -9,12 +9,12 @@ import reactor.core.publisher.Mono;
 /**
  * Created by Proxy on 02.08.2020.
  */
-public class ClearAudioCommandImpl implements Command {
+public class ClearTracksCommandImpl implements Command {
 
     private final AudioPlayer player;
     private final TrackScheduler scheduler;
 
-    public ClearAudioCommandImpl(AudioPlayer player, TrackScheduler scheduler) {
+    public ClearTracksCommandImpl(AudioPlayer player, TrackScheduler scheduler) {
         this.player = player;
         this.scheduler = scheduler;
     }
