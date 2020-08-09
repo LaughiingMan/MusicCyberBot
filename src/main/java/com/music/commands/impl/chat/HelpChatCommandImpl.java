@@ -24,4 +24,9 @@ public class HelpChatCommandImpl implements Command {
                                         new String(HELP_MESSAGE.getBytes(), StandardCharsets.UTF_8),false)))
                 .then();
     }
+
+    @Override
+    public Mono<Void> message(MessageCreateEvent event) {
+        return null;
+    }
 }

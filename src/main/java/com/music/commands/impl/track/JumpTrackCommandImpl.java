@@ -25,4 +25,9 @@ public class JumpTrackCommandImpl implements Command {
                 .doOnNext(command -> scheduler.jumpTrack(Integer.parseInt(command.get(1)) - 1))
                 .then();
     }
+
+    @Override
+    public Mono<Void> message(MessageCreateEvent event) {
+        return null;
+    }
 }

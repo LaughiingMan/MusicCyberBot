@@ -28,4 +28,9 @@ public class AddTrackCommandImpl implements Command {
                 .doOnNext(command -> playerManager.loadItem(command.get(1), scheduler))
                 .then();
     }
+
+    @Override
+    public Mono<Void> message(MessageCreateEvent event) {
+        return null;
+    }
 }

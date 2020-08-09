@@ -19,4 +19,9 @@ public class MessageChatCommandImpl implements Command {
                 .flatMap(channel -> channel.createMessage(new String(ROFL.getBytes(), StandardCharsets.UTF_8)))
                 .then();
     }
+
+    @Override
+    public Mono<Void> message(MessageCreateEvent event) {
+        return null;
+    }
 }

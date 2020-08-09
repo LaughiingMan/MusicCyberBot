@@ -23,6 +23,7 @@ public class TrackScheduler implements AudioLoadResultHandler {
     private final List<AudioTrack> playlists;
     private AudioEventListener audioListener;
     private int count = 0;
+    private String loop = "n";
 
     public TrackScheduler(AudioPlayer player) {
         this.player = player;
@@ -54,7 +55,24 @@ public class TrackScheduler implements AudioLoadResultHandler {
     private void startTrack() {
         if (audioListener == null) {
             player.startTrack(playlists.get(count), true);
-            audioListener = event -> addTrack();
+            audioListener = event -> {
+                switch (getLoop()) {
+                    case "p":
+                        if (playlists.size() <= count + 1) {
+                            count = 0;
+                        }
+                        addTrack();
+                        break;
+                    case "t":
+                        if (player.getPlayingTrack() == null) {
+                            player.playTrack(playlists.get(count));
+                        }
+                        break;
+                    case "n":
+                        addTrack();
+                        break;
+                }
+            };
             player.addListener(audioListener);
         } else {
             addTrack();
@@ -73,6 +91,14 @@ public class TrackScheduler implements AudioLoadResultHandler {
             count = index;
             player.playTrack(playlists.get(count));
         }
+    }
+
+    public String getLoop() {
+        return loop;
+    }
+
+    public void setLoop(String loop) {
+        this.loop = loop;
     }
 
     public void removePlayerListener() {

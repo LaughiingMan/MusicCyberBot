@@ -26,4 +26,9 @@ public class JoinAudioCommandImpl implements Command {
                 .flatMap(channel -> channel.join(spec -> spec.setProvider(provider)))
                 .then();
     }
+
+    @Override
+    public Mono<Void> message(MessageCreateEvent event) {
+        return null;
+    }
 }

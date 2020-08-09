@@ -22,4 +22,9 @@ public class DestroyAudioCommandImpl implements Command {
                 .doOnNext(command -> playerManager.shutdown())
                 .then();
     }
+
+    @Override
+    public Mono<Void> message(MessageCreateEvent event) {
+        return null;
+    }
 }

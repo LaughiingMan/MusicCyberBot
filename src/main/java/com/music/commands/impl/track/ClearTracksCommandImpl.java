@@ -29,4 +29,9 @@ public class ClearTracksCommandImpl implements Command {
                 })
                 .then();
     }
+
+    @Override
+    public Mono<Void> message(MessageCreateEvent event) {
+        return null;
+    }
 }
