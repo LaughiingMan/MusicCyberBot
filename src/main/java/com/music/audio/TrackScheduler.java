@@ -59,13 +59,13 @@ public class TrackScheduler implements AudioLoadResultHandler {
                 switch (getLoop()) {
                     case "p":
                         if (playlists.size() <= count + 1) {
-                            count = 0;
+                            count = -1;
                         }
                         addTrack();
                         break;
                     case "t":
                         if (player.getPlayingTrack() == null) {
-                            player.playTrack(playlists.get(count));
+                            player.playTrack(playlists.get(count).makeClone());
                         }
                         break;
                     case "n":
@@ -82,7 +82,7 @@ public class TrackScheduler implements AudioLoadResultHandler {
     private void addTrack() {
         if (player.getPlayingTrack() == null && playlists.size() > count + 1) {
             count++;
-            player.startTrack(playlists.get(count), true);
+            player.startTrack(playlists.get(count).makeClone(), true);
         }
     }
 

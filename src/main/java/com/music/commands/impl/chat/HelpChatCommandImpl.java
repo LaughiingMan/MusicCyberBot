@@ -20,8 +20,8 @@ public class HelpChatCommandImpl implements Command {
         return event.getMessage().getChannel()
                 .flatMap(channel ->
                         channel.createEmbed(embed ->
-                                embed.addField(new String("Привет сучки!".getBytes(), StandardCharsets.UTF_8),
-                                        new String(HELP_MESSAGE.getBytes(), StandardCharsets.UTF_8),false)))
+                                embed.setTitle(new String("Привет сучки!".getBytes(), StandardCharsets.UTF_8))
+                                        .setDescription(new String(HELP_MESSAGE.getBytes(), StandardCharsets.UTF_8))))
                 .then();
     }
 
