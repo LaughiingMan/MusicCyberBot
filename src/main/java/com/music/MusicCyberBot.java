@@ -76,19 +76,21 @@ public class MusicCyberBot {
                 .subscribe();
         gateway.on(ReactionAddEvent.class)
                 .doOnNext(event -> {
-                    User user = Objects.requireNonNull(event.getUser().block());
-                    Message message = Objects.requireNonNull(event.getMessage().block());
-                    Embed embed = Objects.requireNonNull(message).getEmbeds().get(0);
-                    message.getAuthor().ifPresent(author -> {
-                        if (author.isBot() && !user.isBot()) {
-                            embed.getTitle().ifPresent(title -> {
-                                Listener listener = listeners.get(title);
-                                if (listener != null) {
-                                    listener.execute(message, title);
-                                }
-                            });
-                        }
-                    });
+                    User user = event.getUser().block();
+                    Message message = event.getMessage().block();
+                    if (user != null && message != null && !message.getEmbeds().isEmpty()) {
+                        Embed embed = message.getEmbeds().get(0);
+                        message.getAuthor().ifPresent(author -> {
+                            if (author.isBot() && !user.isBot()) {
+                                embed.getTitle().ifPresent(title -> {
+                                    Listener listener = listeners.get(title);
+                                    if (listener != null) {
+                                        listener.execute(message, title);
+                                    }
+                                });
+                            }
+                        });
+                    }
                 })
                 .subscribe();
         gateway.onDisconnect().block();
