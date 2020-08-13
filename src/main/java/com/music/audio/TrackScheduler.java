@@ -6,8 +6,10 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +17,15 @@ import java.util.List;
 /**
  * Created by Proxy on 29.07.2020.
  */
+@Slf4j
 public class TrackScheduler implements AudioLoadResultHandler {
-
-    private static Logger logger = LoggerFactory.getLogger(TrackScheduler.class);
 
     private final AudioPlayer player;
     private final List<AudioTrack> playlists;
     private AudioEventListener audioListener;
     private int count = 0;
-    private String loop = "n";
+
+    @Getter @Setter private String loop = "n";
 
     public TrackScheduler(AudioPlayer player) {
         this.player = player;
@@ -86,19 +88,14 @@ public class TrackScheduler implements AudioLoadResultHandler {
         }
     }
 
-    public void jumpTrack(int index) {
+    public String jumpTrack(int index) {
         if (playlists.size() > index) {
             count = index;
-            player.playTrack(playlists.get(count));
+            player.playTrack(playlists.get(count).makeClone());
+            AudioTrackInfo info = player.getPlayingTrack().getInfo();
+            return info.title + "\n" + info.uri;
         }
-    }
-
-    public String getLoop() {
-        return loop;
-    }
-
-    public void setLoop(String loop) {
-        this.loop = loop;
+        return "Track missing";
     }
 
     public void removePlayerListener() {

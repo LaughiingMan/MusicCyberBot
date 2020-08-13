@@ -7,9 +7,12 @@ import com.music.commands.impl.audio.DestroyAudioCommandImpl;
 import com.music.commands.impl.audio.JoinAudioCommandImpl;
 import com.music.commands.impl.chat.HelpChatCommandImpl;
 import com.music.commands.impl.chat.MessageChatCommandImpl;
-import com.music.commands.impl.track.*;
+import com.music.commands.impl.track.AddTrackCommandImpl;
+import com.music.commands.impl.track.ClearTracksCommandImpl;
+import com.music.commands.impl.track.JumpTrackCommandImpl;
+import com.music.commands.impl.track.LoopTrackCommandImpl;
 import com.music.listeners.Listener;
-import com.music.listeners.impl.EmojiListener;
+import com.music.listeners.impl.LoopListener;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -23,16 +26,17 @@ import discord4j.core.object.Embed;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.voice.AudioProvider;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created by Proxy on 29.07.2020.
  */
+@Slf4j
 public class MusicCyberBot {
 
     private static final Map<String, Command> commands = new HashMap<>();
@@ -103,7 +107,7 @@ public class MusicCyberBot {
 
     private static void addAudioCommand(AudioProvider provider) {
         commands.put("join", new JoinAudioCommandImpl(provider));
-        commands.put("destroy", new DestroyAudioCommandImpl(playerManager));
+        commands.put("exit", new DestroyAudioCommandImpl());
     }
 
     private static void addTrackCommand(AudioPlayer player, TrackScheduler scheduler) {
@@ -114,6 +118,6 @@ public class MusicCyberBot {
     }
 
     private static void addListeners() {
-        listeners.put("Invalid loop", new EmojiListener());
+        listeners.put("Invalid loop", new LoopListener());
     }
 }

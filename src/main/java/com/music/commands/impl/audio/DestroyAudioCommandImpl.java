@@ -1,8 +1,10 @@
 package com.music.commands.impl.audio;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.music.commands.Command;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.VoiceState;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.channel.VoiceChannel;
 import reactor.core.publisher.Mono;
 
 /**
@@ -10,21 +12,19 @@ import reactor.core.publisher.Mono;
  */
 public class DestroyAudioCommandImpl implements Command {
 
-    private final AudioPlayerManager playerManager;
-
-    public DestroyAudioCommandImpl(AudioPlayerManager playerManager) {
-        this.playerManager = playerManager;
-    }
-
     @Override
     public Mono<Void> execute(MessageCreateEvent event) {
-        return Mono.justOrEmpty(event.getMessage().getContent())
-                .doOnNext(command -> playerManager.shutdown())
-                .then();
+        return Mono.justOrEmpty(event.getMember())
+                .flatMap(Member::getVoiceState)
+                .flatMap(VoiceState::getChannel)
+                .flatMap(VoiceChannel::sendDisconnectVoiceState)
+                .then(message(event));
     }
 
     @Override
     public Mono<Void> message(MessageCreateEvent event) {
-        return null;
+        return event.getMessage().getChannel()
+                .flatMap(channel -> channel.createEmbed(embed -> embed.setTitle("Exit").setDescription("WTF")).then())
+                .then();
     }
 }

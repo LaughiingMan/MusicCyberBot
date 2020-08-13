@@ -24,11 +24,21 @@ public class JoinAudioCommandImpl implements Command {
                 .flatMap(Member::getVoiceState)
                 .flatMap(VoiceState::getChannel)
                 .flatMap(channel -> channel.join(spec -> spec.setProvider(provider)))
-                .then();
+                .then(message(event));
     }
 
     @Override
     public Mono<Void> message(MessageCreateEvent event) {
-        return null;
+        return event.getMessage().getChannel()
+                .flatMap(channel ->
+                        channel.createEmbed(embed ->
+                                embed.setTitle("Hey")
+                                        .setDescription(
+                                                "I am connected\n" +
+                                                "Enter the command:\n" +
+                                                "-help"
+                                        ))
+                                .then())
+                .then();
     }
 }

@@ -1,5 +1,7 @@
 package com.music;
 
+import lombok.Getter;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -9,7 +11,7 @@ import java.util.Properties;
  */
 public class MusicBotConfig {
 
-    private String token;
+    @Getter private String token;
     private String prefix;
 
     public MusicBotConfig(String fileName) {
@@ -29,10 +31,6 @@ public class MusicBotConfig {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public String getToken() {
-        return token;
     }
 
     public String getPrefix() {

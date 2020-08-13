@@ -33,11 +33,25 @@ public class LoopTrackCommandImpl implements Command {
                 .then(message(event));
     }
 
+    @Override
+    public Mono<Void> message(MessageCreateEvent event) {
+        return event.getMessage().getChannel()
+                .flatMap(channel -> {
+                    Message text = channel.createEmbed(embed -> embed.setTitle(title)
+                            .setDescription(message))
+                            .block();
+                    return Objects.requireNonNull(text)
+                            .addReaction(ReactionEmoji.unicode(emoji))
+                            .then();
+                })
+                .then();
+    }
+
     private void checkLoop(List<String> command) {
         if (command.size() > 1) {
             scheduler.setLoop(command.get(1));
-            title = "Loop installed";
-            message = "Success";
+            title = "Loop";
+            message = "Loop installed";
             switch (scheduler.getLoop()) {
                 case "p":
                     emoji = "\uD83D\uDD01";
@@ -59,19 +73,5 @@ public class LoopTrackCommandImpl implements Command {
             message = "Click the button for more information.";
             emoji = "\uD83D\uDCDD";
         }
-    }
-
-    @Override
-    public Mono<Void> message(MessageCreateEvent event) {
-        return event.getMessage().getChannel()
-                .flatMap(channel -> {
-                    Message text = channel.createEmbed(embed -> embed.setTitle(title)
-                            .setDescription(message))
-                            .block();
-                    return Objects.requireNonNull(text)
-                            .addReaction(ReactionEmoji.unicode(emoji))
-                            .then();
-                })
-                .then();
     }
 }
