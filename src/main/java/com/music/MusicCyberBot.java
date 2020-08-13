@@ -3,7 +3,7 @@ package com.music;
 import com.music.audio.LavaPlayerAudioProvider;
 import com.music.audio.TrackScheduler;
 import com.music.commands.Command;
-import com.music.commands.impl.audio.DestroyAudioCommandImpl;
+import com.music.commands.impl.audio.ExitAudioCommandImpl;
 import com.music.commands.impl.audio.JoinAudioCommandImpl;
 import com.music.commands.impl.chat.HelpChatCommandImpl;
 import com.music.commands.impl.chat.MessageChatCommandImpl;
@@ -107,7 +107,7 @@ public class MusicCyberBot {
 
     private static void addAudioCommand(AudioProvider provider) {
         commands.put("join", new JoinAudioCommandImpl(provider));
-        commands.put("exit", new DestroyAudioCommandImpl());
+        commands.put("exit", new ExitAudioCommandImpl());
     }
 
     private static void addTrackCommand(AudioPlayer player, TrackScheduler scheduler) {

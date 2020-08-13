@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 /**
  * Created by Proxy on 29.07.2020.
  */
-public class DestroyAudioCommandImpl implements Command {
+public class ExitAudioCommandImpl implements Command {
 
     @Override
     public Mono<Void> execute(MessageCreateEvent event) {
