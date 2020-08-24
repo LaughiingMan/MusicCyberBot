@@ -7,11 +7,13 @@ import com.music.commands.impl.audio.ExitAudioCommandImpl;
 import com.music.commands.impl.audio.JoinAudioCommandImpl;
 import com.music.commands.impl.chat.HelpChatCommandImpl;
 import com.music.commands.impl.chat.MessageChatCommandImpl;
-import com.music.commands.impl.track.AddTrackCommandImpl;
-import com.music.commands.impl.track.ClearTracksCommandImpl;
-import com.music.commands.impl.track.JumpTrackCommandImpl;
-import com.music.commands.impl.track.LoopTrackCommandImpl;
+import com.music.commands.impl.chat.SuperUserChatCommandImpl;
+import com.music.commands.impl.track.*;
+import com.music.events.GatewayEvent;
+import com.music.events.impl.MessageCreateEventImpl;
+import com.music.events.impl.ReactionAddEventImpl;
 import com.music.listeners.Listener;
+import com.music.listeners.impl.ListListener;
 import com.music.listeners.impl.LoopListener;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -22,13 +24,8 @@ import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.object.Embed;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.User;
 import discord4j.voice.AudioProvider;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,85 +36,74 @@ import java.util.Map;
 @Slf4j
 public class MusicCyberBot {
 
+    private static final Map<String, GatewayEvent> events = new HashMap<>();
     private static final Map<String, Command> commands = new HashMap<>();
     private static final Map<String, Listener> listeners = new HashMap<>();
     private static final AudioPlayerManager playerManager;
+    private static final AudioPlayer player;
+    private static final AudioProvider provider;
+    private static final TrackScheduler scheduler;
     private static final MusicBotConfig config;
     private static final DiscordClient client;
     private static final GatewayDiscordClient gateway;
+    private static boolean isSuperUser;
 
     static {
-        playerManager = new DefaultAudioPlayerManager();
         config = new MusicBotConfig("application.properties");
         client = DiscordClient.create(config.getToken());
         gateway = client.login().block();
+        playerManager = new DefaultAudioPlayerManager();
+
+        playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
+        AudioSourceManagers.registerRemoteSources(playerManager);
+
+        player = playerManager.createPlayer();
+        provider = new LavaPlayerAudioProvider(player);
+        scheduler = new TrackScheduler(player);
+
+        addEvents();
         addListeners();
+        addChatCommand();
+        addAudioCommand();
+        addTrackCommand();
     }
 
     public static void main(String[] args) {
-        audioChannel();
-        messageChannel();
-    }
-
-    private static void audioChannel() {
-        playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
-        AudioSourceManagers.registerRemoteSources(playerManager);
-        final AudioPlayer player = playerManager.createPlayer();
-        final AudioProvider provider = new LavaPlayerAudioProvider(player);
-        final TrackScheduler scheduler = new TrackScheduler(player);
-        addAudioCommand(provider);
-        addTrackCommand(player, scheduler);
-    }
-
-    private static void messageChannel() {
-        addChatCommand();
         gateway.on(MessageCreateEvent.class)
-                .flatMap(event -> Mono.just(event.getMessage().getContent())
-                        .flatMap(content -> Flux.fromIterable(commands.entrySet())
-                                .filter(entry -> content.startsWith(config.getPrefix() + entry.getKey()))
-                                .flatMap(entry -> entry.getValue().execute(event))
-                                .next()))
+                .flatMap(event -> events.get(event.getClass().getSimpleName()).event(event))
                 .subscribe();
         gateway.on(ReactionAddEvent.class)
-                .doOnNext(event -> {
-                    User user = event.getUser().block();
-                    Message message = event.getMessage().block();
-                    if (user != null && message != null && !message.getEmbeds().isEmpty()) {
-                        Embed embed = message.getEmbeds().get(0);
-                        message.getAuthor().ifPresent(author -> {
-                            if (author.isBot() && !user.isBot()) {
-                                embed.getTitle().ifPresent(title -> {
-                                    Listener listener = listeners.get(title);
-                                    if (listener != null) {
-                                        listener.execute(message, title);
-                                    }
-                                });
-                            }
-                        });
-                    }
-                })
+                .doOnNext(event -> events.get(event.getClass().getSimpleName()).event(event))
                 .subscribe();
         gateway.onDisconnect().block();
+    }
+
+    private static void addEvents() {
+        events.put("MessageCreateEvent", new MessageCreateEventImpl(config, commands));
+        events.put("ReactionAddEvent", new ReactionAddEventImpl(listeners));
     }
 
     private static void addChatCommand() {
         commands.put("rofl", new MessageChatCommandImpl());
         commands.put("help", new HelpChatCommandImpl());
+        commands.put("superUser", new SuperUserChatCommandImpl(config));
     }
 
-    private static void addAudioCommand(AudioProvider provider) {
+    private static void addAudioCommand() {
         commands.put("join", new JoinAudioCommandImpl(provider));
         commands.put("exit", new ExitAudioCommandImpl());
     }
 
-    private static void addTrackCommand(AudioPlayer player, TrackScheduler scheduler) {
+    private static void addTrackCommand() {
         commands.put("add", new AddTrackCommandImpl(scheduler, playerManager));
         commands.put("clear", new ClearTracksCommandImpl(player, scheduler));
         commands.put("jump", new JumpTrackCommandImpl(scheduler));
         commands.put("loop", new LoopTrackCommandImpl(scheduler));
+        commands.put("queue", new QueueTracksCommandImpl(scheduler));
     }
 
     private static void addListeners() {
         listeners.put("Invalid loop", new LoopListener());
+        listeners.put("List", new ListListener());
     }
 }

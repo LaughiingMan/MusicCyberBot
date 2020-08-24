@@ -5,18 +5,16 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.voice.AudioProvider;
+import lombok.Data;
 import reactor.core.publisher.Mono;
 
 /**
  * Created by Proxy on 29.07.2020.
  */
+@Data
 public class JoinAudioCommandImpl implements Command {
 
     private final AudioProvider provider;
-
-    public JoinAudioCommandImpl(final AudioProvider provider) {
-        this.provider = provider;
-    }
 
     @Override
     public Mono<Void> execute(MessageCreateEvent event) {

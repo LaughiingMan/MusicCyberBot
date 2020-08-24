@@ -3,6 +3,7 @@ package com.music.commands.impl.track;
 import com.music.audio.TrackScheduler;
 import com.music.commands.Command;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import lombok.Data;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
@@ -11,15 +12,12 @@ import java.util.List;
 /**
  * Created by Proxy on 04.08.2020.
  */
+@Data
 public class JumpTrackCommandImpl implements Command {
 
     private final TrackScheduler scheduler;
     private String title;
     private String message;
-
-    public JumpTrackCommandImpl(TrackScheduler scheduler) {
-        this.scheduler = scheduler;
-    }
 
     @Override
     public Mono<Void> execute(MessageCreateEvent event) {

@@ -7,30 +7,25 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Proxy on 29.07.2020.
  */
 @Slf4j
+@Data
 public class TrackScheduler implements AudioLoadResultHandler {
 
+    private final List<AudioTrack> playlists = new ArrayList<>();
     private final AudioPlayer player;
-    private final List<AudioTrack> playlists;
     private AudioEventListener audioListener;
+    private String loop = "n";
     private int count = 0;
-
-    @Getter @Setter private String loop = "n";
-
-    public TrackScheduler(AudioPlayer player) {
-        this.player = player;
-        playlists = new ArrayList<>();
-    }
 
     @Override
     public void trackLoaded(AudioTrack track) {
@@ -89,7 +84,7 @@ public class TrackScheduler implements AudioLoadResultHandler {
     }
 
     public String jumpTrack(int index) {
-        if (playlists.size() > index) {
+        if (playlists.size() > index && !(index < 0)) {
             count = index;
             player.playTrack(playlists.get(count).makeClone());
             AudioTrackInfo info = player.getPlayingTrack().getInfo();
@@ -106,7 +101,19 @@ public class TrackScheduler implements AudioLoadResultHandler {
         }
     }
 
-    public void cleanPlaylists() {
+    public List<String> getPlaylists() {
+        return playlists.stream()
+                .map(track -> {
+                    long index = playlists.indexOf(track) + 1;
+                    if (index == count + 1) {
+                        return String.format("%s. \uD83C\uDFB5 %s \uD83C\uDFB5", index, track.getInfo().title);
+                    }
+                    return String.format("%s. %s", index, track.getInfo().title);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public void clearPlaylists() {
         playlists.clear();
     }
 }
