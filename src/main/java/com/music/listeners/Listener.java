@@ -1,5 +1,6 @@
 package com.music.listeners;
 
+import discord4j.core.event.domain.Event;
 import discord4j.core.object.entity.Message;
 
 /**
@@ -7,5 +8,5 @@ import discord4j.core.object.entity.Message;
  */
 public interface Listener {
 
-    void execute(Message message, String title);
+    void execute(Message message, String title, Event event);
 }

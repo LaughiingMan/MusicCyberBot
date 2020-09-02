@@ -1,6 +1,7 @@
 package com.music.listeners.impl;
 
 import com.music.listeners.Listener;
+import discord4j.core.event.domain.Event;
 import discord4j.core.object.entity.Message;
 
 /**
@@ -9,7 +10,7 @@ import discord4j.core.object.entity.Message;
 public class LoopListener implements Listener {
 
     @Override
-    public void execute(Message message, String title) {
+    public void execute(Message message, String title, Event event) {
         message.edit(spec ->
                 spec.setEmbed(newEmbed ->
                         newEmbed.setTitle(title)

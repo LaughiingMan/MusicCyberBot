@@ -38,9 +38,7 @@ public class MessageCreateEventImpl implements GatewayEvent {
     private Mono<Void> getExecute(MessageCreateEvent messageCreateEvent, Map.Entry<String, Command> entry) {
         if (config.isSuperUser()) {
             Optional<User> user = messageCreateEvent.getMessage().getAuthor();
-
             if (user.isPresent() && !config.getSuperUser().isEmpty() && !config.getSuperUser().contains(user.get().getId().asString())) {
-                System.out.println("go");
                 return messageCreateEvent.getMessage().getChannel()
                         .flatMap(channel -> channel.createMessage(new String(STOP.getBytes(), StandardCharsets.UTF_8)))
                         .then();

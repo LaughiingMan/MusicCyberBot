@@ -93,6 +93,53 @@ public class TrackScheduler implements AudioLoadResultHandler {
         return "Track missing";
     }
 
+    public void nextTrack() {
+        if (playlists.size() > count + 1) {
+            count++;
+            player.playTrack(playlists.get(count).makeClone());
+        } else {
+            count = 0;
+            player.playTrack(playlists.get(count).makeClone());
+        }
+    }
+
+    public void previousTrack() {
+        if (count - 1 == -1) {
+            count = playlists.size() - 1;
+            player.playTrack(playlists.get(count).makeClone());
+        } else {
+            count--;
+            player.playTrack(playlists.get(count).makeClone());
+        }
+    }
+
+    public String currentTrack() {
+        AudioTrackInfo info = player.getPlayingTrack().getInfo();
+        return info.title + "\n" + info.uri;
+    }
+
+    public void removeTrack(List<String> numbers) {
+        numbers.forEach(item -> {
+            if (item.contains("-")) {
+                String[] multipleNumbers = item.split("-");
+                int n1 = Integer.parseInt(multipleNumbers[0]);
+                int n2 = Integer.parseInt(multipleNumbers[1]);
+                for (int i = n1 - 1; i < n2; i++) {
+                    checkCount(n1 - 1);
+                    playlists.remove(n1 - 1);
+                }
+            } else {
+                int number = Integer.parseInt(item);
+                checkCount(number - 1);
+                playlists.remove(number - 1);
+            }
+        });
+    }
+
+    private void checkCount(int number) {
+        if (number < count) count--;
+    }
+
     public void removePlayerListener() {
         if (audioListener != null) {
             player.removeListener(audioListener);

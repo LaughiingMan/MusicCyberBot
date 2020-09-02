@@ -11,7 +11,7 @@ import com.music.commands.impl.chat.SuperUserChatCommandImpl;
 import com.music.commands.impl.track.*;
 import com.music.events.GatewayEvent;
 import com.music.events.impl.MessageCreateEventImpl;
-import com.music.events.impl.ReactionAddEventImpl;
+import com.music.events.impl.ReactionEventsImpl;
 import com.music.listeners.Listener;
 import com.music.listeners.impl.ListListener;
 import com.music.listeners.impl.LoopListener;
@@ -24,6 +24,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.voice.AudioProvider;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,7 +47,6 @@ public class MusicCyberBot {
     private static final MusicBotConfig config;
     private static final DiscordClient client;
     private static final GatewayDiscordClient gateway;
-    private static boolean isSuperUser;
 
     static {
         config = new MusicBotConfig("application.properties");
@@ -75,12 +75,16 @@ public class MusicCyberBot {
         gateway.on(ReactionAddEvent.class)
                 .doOnNext(event -> events.get(event.getClass().getSimpleName()).event(event))
                 .subscribe();
+        gateway.on(ReactionRemoveEvent.class)
+                .doOnNext(event -> events.get(event.getClass().getSimpleName()).event(event))
+                .subscribe();
         gateway.onDisconnect().block();
     }
 
     private static void addEvents() {
         events.put("MessageCreateEvent", new MessageCreateEventImpl(config, commands));
-        events.put("ReactionAddEvent", new ReactionAddEventImpl(listeners));
+        events.put("ReactionAddEvent", new ReactionEventsImpl(listeners));
+        events.put("ReactionRemoveEvent", new ReactionEventsImpl(listeners));
     }
 
     private static void addChatCommand() {
@@ -100,6 +104,9 @@ public class MusicCyberBot {
         commands.put("jump", new JumpTrackCommandImpl(scheduler));
         commands.put("loop", new LoopTrackCommandImpl(scheduler));
         commands.put("queue", new QueueTracksCommandImpl(scheduler));
+        commands.put("next", new NextTrackCommandImpl(scheduler));
+        commands.put("previous", new PreviousTrackCommandImpl(scheduler));
+        commands.put("remove", new RemoveTrackCommandImpl(scheduler));
     }
 
     private static void addListeners() {
