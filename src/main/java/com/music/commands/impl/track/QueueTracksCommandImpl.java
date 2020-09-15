@@ -19,7 +19,7 @@ import java.util.Optional;
 public class QueueTracksCommandImpl implements Command {
 
     private final TrackScheduler scheduler;
-    private StringBuilder message;
+    private String message;
 
     @Override
     public Mono<Void> execute(MessageCreateEvent event) {
@@ -34,7 +34,8 @@ public class QueueTracksCommandImpl implements Command {
                 .flatMap(channel -> {
                     Message text = channel.createEmbed(embed -> embed
                             .setTitle("List")
-                            .setDescription(message.toString()))
+                            .setDescription(message)
+                            .setFooter("Number of tracks: " + scheduler.getCountTracks(), null))
                             .block();
                     Objects.requireNonNull(text)
                             .addReaction(ReactionEmoji.unicode("\uD83D\uDD3C"))
@@ -47,16 +48,14 @@ public class QueueTracksCommandImpl implements Command {
     }
 
     private void fillQueue() {
-        message = new StringBuilder();
         List<String> playlists = scheduler.getPlaylists();
+
         Optional<String> currentTrack = playlists.stream()
                 .filter(trackName -> trackName.contains("\uD83C\uDFB5"))
                 .findFirst();
-        int rangeFrom = currentTrack.isPresent() && playlists.indexOf(currentTrack.get()) > 4 ? playlists.indexOf(currentTrack.get()) - 5 : 0;
-        for (int i = rangeFrom; i < rangeFrom + 11; i++) {
-            if (i >= playlists.size()) break;
-            message.append(playlists.get(i))
-                    .append("\n");
-        }
+
+        int range = currentTrack.isPresent() && playlists.indexOf(currentTrack.get()) > 4 ? playlists.indexOf(currentTrack.get()) - 5 : 0;
+
+        message = scheduler.getQueue(range);
     }
 }

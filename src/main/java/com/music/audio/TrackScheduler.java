@@ -163,4 +163,22 @@ public class TrackScheduler implements AudioLoadResultHandler {
     public void clearPlaylists() {
         playlists.clear();
     }
+
+    public String getQueue(int range) {
+        if (range < 0) range = 0;
+
+        StringBuilder builder = new StringBuilder();
+        List<String> queue = getPlaylists();
+
+        for (int i = range; i < range + 10; i++) {
+            if (i >= queue.size()) break;
+            builder.append(queue.get(i)).append("\n");
+        }
+
+        return builder.toString();
+    }
+
+    public int getCountTracks() {
+        return getPlaylists().size();
+    }
 }

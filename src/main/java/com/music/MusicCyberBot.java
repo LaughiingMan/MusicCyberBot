@@ -111,6 +111,6 @@ public class MusicCyberBot {
 
     private static void addListeners() {
         listeners.put("Invalid loop", new LoopListener());
-        listeners.put("List", new ListListener());
+        listeners.put("List", new ListListener(scheduler));
     }
 }
