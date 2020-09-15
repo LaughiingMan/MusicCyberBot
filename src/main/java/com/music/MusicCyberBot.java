@@ -99,6 +99,8 @@ public class MusicCyberBot {
     }
 
     private static void addTrackCommand() {
+        commands.put("play", new PlayTrackCommandImpl(scheduler, player));
+        commands.put("stop", new StopTrackCommandImpl(scheduler, player));
         commands.put("add", new AddTrackCommandImpl(scheduler, playerManager));
         commands.put("clear", new ClearTracksCommandImpl(player, scheduler));
         commands.put("jump", new JumpTrackCommandImpl(scheduler));
